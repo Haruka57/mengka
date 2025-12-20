@@ -1,0 +1,246 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "YouYuan";
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+body {
+    background: #d7d3b6;
+}
+
+.container {
+    /*padding-top: 30px;*/
+    width: 100%;
+    height: 100%;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: max(8px, env(safe-area-inset-top))
+        max(8px, env(safe-area-inset-right))
+        max(8px, env(safe-area-inset-bottom))
+        max(8px, env(safe-area-inset-left));
+}
+
+.main {
+    /* 设计稿尺寸：750x1334，默认缩放 0.5；手机上会按屏幕自动缩小，避免破版 */
+    --designW: 750px;
+    --designH: 1334px;
+    --maxScale: 0.5;
+    /* 注意：calc() 的除法在部分浏览器兼容性不佳，会导致整个值无效从而“画面消失”。
+       这里先给一个可靠默认值，动态缩放由 index2.html 的 JS 写入 --scale。 */
+    --scale: var(--maxScale);
+
+    width: calc(var(--designW) * var(--scale));
+    height: calc(var(--designH) * var(--scale));
+    margin: 0 auto;
+    overflow: hidden;
+    text-align: center;
+    position: relative;
+    touch-action: manipulation;
+}
+
+.main .gameRoot {
+    width: var(--designW);
+    height: var(--designH);
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: scale(var(--scale));
+    transform-origin: top left;
+    background-image: url('image/background.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+}
+
+.main .gameRoot .hud {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: left;
+}
+ 
+.main .gameRoot .hud__right {
+    text-align: left;
+    transform: translate(50px, 70px);
+}
+
+/* 右上角：得分/最高分底板 + 字体放大 */
+.main .gameRoot .hud__right .gameScore,
+.main .gameRoot .hud__right .maxScore {
+    display: block;
+    background: transparent;
+    color: #fff;
+    padding: 0;
+    border-radius: 0;
+    margin-bottom: 8px;
+    font-size: 42px;
+    font-weight: bold;
+    line-height: 1.1;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.55);
+}
+
+.main .gameRoot .hud__right .gameScore span,
+.main .gameRoot .hud__right .maxScore span {
+    color: #fff;
+    font-size: 60px;
+    font-weight: bold;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.55);
+}
+
+.main .gameName {
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.main .maxScore {
+    font-size: 20px;
+}
+
+.main .maxScore span {
+    color: red;
+    font-weight: bold;
+}
+
+.main .gameBody {
+    --tile: 140px;
+    --gap: 10px;
+    --pad: 15px;
+    width: calc(var(--tile) * 4 + var(--gap) * 3 + var(--pad) * 2);
+    height: calc(var(--tile) * 4 + var(--gap) * 3 + var(--pad) * 2);
+    margin: 0 auto;
+    padding: var(--pad);
+    box-sizing: border-box;
+    background: transparent;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, var(--tile));
+    grid-auto-rows: var(--tile);
+    gap: var(--gap);
+    transform: translate(10px, 450px);
+}
+
+.main .gameBody .row {
+    /* 让 HTML 里的 .row 不参与布局（避免 Bootstrap 的 row 影响） */
+    display: contents;
+}
+
+/* Bootstrap 的 .row 会生成 ::before/::after（table/clearfix），会占位导致网格错乱 */
+.main .gameBody .row::before,
+.main .gameBody .row::after {
+    content: none !important;
+    display: none !important;
+}
+
+.main .gameBody .row .item {
+    width: var(--tile);
+    height: var(--tile);
+    border-radius: 0;
+    background: #fff;
+    position: relative;
+    text-align: center;
+    line-height: var(--tile);
+    font-size: 60px;
+    font-weight: bold;
+    margin: 0;
+    color: transparent;
+    font-family: "microsoft yahei";
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 110%;
+}
+
+/* 右下角小正方形数字标记 */
+.main .gameBody .row .item[data-value]::after {
+    content: attr(data-value);
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    font-size: 25px;
+    font-weight: bold;
+    color: #666;
+    background: #fff;
+    border: 1px solid #666;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.main .gameRule {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.main .gameScore {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 0px;
+}
+
+.main .gameScore span {
+    color: red;
+    font-size: 30px;
+}
+
+.main .scoreAndRefresh {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    width: auto;
+    margin: 0;
+}
+
+.main .scoreAndRefresh .refreshBtn {
+    margin-top: 0;
+}
+
+/* 只影响游戏底部按钮，不影响弹窗里的同名按钮 */
+.main .gameRoot .scoreAndRefresh .refreshBtn,
+.main .gameRoot .scoreAndRefresh .undoBtn {
+    width: 280px;
+    height: 100px;
+    padding: 0;
+    font-size: 26px;
+    font-weight: bold;
+    border-radius: 0;
+}
+
+.modal {
+    margin-top: 150px;
+
+}
+
+.modal .modal-header h4 {
+    text-align: left;
+    font-weight: bold;
+}
+
+.modal .modal-dialog {
+    width: 300px;
+    margin: 0 auto;
+
+}
+
+.modal .modal-body {
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+}

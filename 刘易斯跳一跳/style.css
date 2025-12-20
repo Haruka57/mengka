@@ -1,0 +1,188 @@
+:root {
+  --bg: #d7d3b6;
+  --panel: #121621;
+  --text: #e7eaf0;
+  --muted: #9aa3b2;
+  --line: #2a3242;
+}
+
+* { box-sizing: border-box; }
+
+/* 确保 hidden 属性在自定义样式下也能生效 */
+[hidden] { display: none !important; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  align-items: center;
+}
+
+.hud__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud__right {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+}
+
+.muted { color: var(--muted); }
+
+.stage {
+  position: relative;
+  margin-top: 0;
+  background: #0f1320;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.stage__main {
+  position: relative;
+}
+
+.scorebar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(18, 22, 33, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: none;
+  font-size: 12px;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 800 / 240;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.45);
+}
+
+.overlay__panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+  text-align: center;
+}
+
+.overlay__title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.95em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #0d1020;
+}
+
+.footer {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  html, body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  .wrap {
+    padding: max(10px, env(safe-area-inset-top))
+      max(10px, env(safe-area-inset-right))
+      max(10px, env(safe-area-inset-bottom))
+      max(10px, env(safe-area-inset-left));
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hud {
+    flex-wrap: wrap;
+    border-radius: 12px;
+  }
+
+  .scorebar {
+    top: 8px;
+    right: 8px;
+    gap: 10px;
+    padding: 6px 8px;
+  }
+
+  .stage {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
+
+  .stage__main {
+    flex: 1;
+    display: grid;
+    place-items: center;
+  }
+
+  canvas {
+    max-height: 100%;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .wrap {
+    max-width: none;
+    padding: 8px;
+  }
+
+  .hud {
+    padding: 8px 10px;
+  }
+
+  .stage {
+    margin-top: 10px;
+  }
+}
