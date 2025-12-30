@@ -1,56 +1,338 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-	<title>游戏选择</title>
-	<style>
-		* { box-sizing: border-box; }
-		html, body { height: 100%; }
-		body {
-			margin: 0;
-			font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			padding: max(16px, env(safe-area-inset-top))
-				max(16px, env(safe-area-inset-right))
-				max(16px, env(safe-area-inset-bottom))
-				max(16px, env(safe-area-inset-left));
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>精灵运势电视</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: #f7e8c8; /* 香槟色背景 */
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .tv-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .tv {
+            width: 100%;
+            height: auto;
+            display: block;
+            position: relative;
+            z-index: 10; /* 电视机框架 */
+            pointer-events: none; /* 确保点击事件能穿透到下层 */
+        }
+        
+        .tv-screen-area {
+            position: absolute;
+            top: 13%;
+            left: 7%;
+            width: 86%;
+            height: 70%;
+            cursor: pointer;  
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 5px;
+            z-index: 5; /* 电视屏幕区域 */
+        }
+        
+        .screen-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background-color: #000;
+        }
+        
+        .start-screen {
+            width: 85%; /* 减小图片大小 */
+            height: 85%; /* 减小图片大小 */
+            object-fit: contain; /* 保持比例 */
+        }
+        
+        .result-content {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .result-image {
+            max-width: 85%; /* 调整结果图片大小 */
+            max-height: 85%; /* 调整结果图片大小 */
+            object-fit: contain; /* 保持比例 */
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .result-text {
+            display: none; /* 隐藏文字显示 */
+        }
+        
+        .text-box-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .text-box {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .message-display {
+            position: absolute;
+            top: 25%;
+            left: 10%;
+            width: 80%;
+            height: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #3a2c1a;
+            font-size: 1.4rem;
+            line-height: 1.5;
+            padding: 20px;
+            overflow-y: hidden; /* 修改为hidden以删除滚动条 */
+            word-break: break-word;
+        }
+        
+        .tv-static {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.15) 0px,
+                rgba(255, 255, 255, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            animation: tvStatic 0.1s infinite linear;
+            opacity: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .click-hint {
+            position: absolute;
+            bottom: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            animation: pulse 2s infinite;
+            z-index: 15; /* 点击提示 */
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes tvStatic {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
 
-		.wrap {
-			width: min(420px, 100%);
-			display: grid;
-			gap: 12px;
-		}
+        .game-buttons {
+            width: 100%;
+            max-width: 600px;
+            margin: 16px auto 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
 
-		h1 {
-			margin: 0 0 8px;
-			font-size: 18px;
-		}
+        .btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            padding: 14px 12px;
+            border: 1px solid #3a2c1a;
+            border-radius: 10px;
+            color: #fff;
+            background: #8b5a2b;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 650px) {
+            .message-display {
+                font-size: 1.1rem;
+                padding: 14px;
+            }
 
-		.btn {
-			display: block;
-			width: 100%;
-			text-align: center;
-			text-decoration: none;
-			padding: 14px 12px;
-			border: 1px solid #ccc;
-			border-radius: 10px;
-			color: #111;
-			background: #fff;
-			font-weight: 700;
-		}
+            .click-hint {
+                bottom: 10px;
+                font-size: 0.95rem;
+            }
 
-		.small { font-size: 12px; color: #666; }
-	</style>
+            .game-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-	<div class="wrap">
-		
-		<a class="btn" href="刘易斯跳一跳/index1.html">刘易斯跳一跳</a>
-		<a class="btn" href="2048/index2.html">2048</a>
-	</div>
+    <div class="container">
+        <div class="tv-container">
+            <!-- 电视图片 -->
+            <img src="image/电视素材.png" alt="电视机" class="tv">
+            <div class="tv-screen-area" id="tvScreenArea">
+                <div class="tv-static"></div>
+                <div class="screen-content">
+                    <img src="image/开始.png" alt="开始画面" class="start-screen">
+                    <div class="result-content">
+                        <img class="result-image" src="" alt="精灵图片">
+                        <div class="result-text"></div>
+                    </div>
+                    <div class="click-hint">点击屏幕查看运势</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-box-container">
+            <!-- 文本框图片 -->
+            <img src="image/文本框.png" alt="文本框" class="text-box">
+            <div class="message-display">
+                点击电视屏幕查看今天的精灵运势
+            </div>
+        </div>
+
+        <div class="game-buttons" aria-label="游戏入口">
+            <a class="btn" href="刘易斯跳一跳/index1.html">刘易斯跳一跳</a>
+            <a class="btn" href="2048/index2.html">2048</a>
+        </div>
+    </div>
+
+    <script>
+        // 精灵消息和对应的图片
+        const messages = [
+            {
+                text: "精灵们今天非常开心！他们会尽可能给所有人带来好运的",
+                image: "image/铱星.png"
+            },
+            {
+                text: "精灵们今天的心情很不错，你今天要走运了",
+                image: "image/金星.png"
+            },
+            {
+                text: "精灵们今天没有任何感情倾向。因此今天的运势全掌握在你手中",
+                image: "image/蓝星.png"
+            },
+            {
+                text: "这可罕见了。精灵们今天很冷漠",
+                image: "image/蓝星.png"
+            },
+            {
+                text: "今天精灵们十分气恼。你要走霉运了",
+                image: "image/蝙蝠.png"
+            },
+            {
+                text: "今天精灵们有些烦躁。你要走霉运了",
+                image: "image/蝙蝠.png"
+            },
+            {
+                text: "精灵今天十分不满。他们会竭尽全力给你捣蛋的",
+                image: "image/骷髅.png"
+            }
+        ];
+        
+        // 获取DOM元素
+        const tvScreenArea = document.getElementById('tvScreenArea');
+        const startScreen = document.querySelector('.start-screen');
+        const resultContent = document.querySelector('.result-content');
+        const resultImage = document.querySelector('.result-image');
+        const resultText = document.querySelector('.result-text');
+        const messageDisplay = document.querySelector('.message-display');
+        const tvStatic = document.querySelector('.tv-static');
+        const clickHint = document.querySelector('.click-hint');
+        
+        // 点击电视屏幕的事件处理
+        tvScreenArea.addEventListener('click', function() {
+            // 显示电视静态效果
+            tvStatic.style.opacity = '0.3';
+            clickHint.style.display = 'none';
+            
+            // 1秒后显示随机消息
+            setTimeout(() => {
+                // 隐藏开始画面，显示结果
+                startScreen.style.display = 'none';
+                resultContent.style.display = 'flex';
+                
+                // 随机选择一条消息
+                const randomIndex = Math.floor(Math.random() * messages.length);
+                const selectedMessage = messages[randomIndex];
+                
+                // 设置结果图片和消息
+                resultImage.src = selectedMessage.image;
+                resultText.textContent = selectedMessage.text;
+                
+                // 在下方文本框中显示消息
+                messageDisplay.textContent = selectedMessage.text;
+                
+                // 添加淡入动画
+                resultContent.classList.add('fade-in');
+                
+                // 移除电视静态效果
+                tvStatic.style.opacity = '0';
+                
+                // 移除淡入动画类，以便下次使用
+                setTimeout(() => {
+                    resultContent.classList.remove('fade-in');
+                }, 1000);
+                
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
